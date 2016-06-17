@@ -45,6 +45,14 @@
 #include "pyGrid.h"
 #include "pyutil.h"
 
+
+// workaround for python version 3.5 mail/scipy/org bruce sherwood
+// lukas gartmair 15.06.2016
+int init_numpy()
+{
+	import_array();
+}
+
 namespace py = boost::python;
 
 
@@ -577,11 +585,13 @@ struct VecTypeDescr
 ////////////////////////////////////////
 
 
-#ifdef DWA_OPENVDB
-#define PY_OPENVDB_MODULE_NAME  _openvdb
-#else
+//#ifdef DWA_OPENVDB
+//#define PY_OPENVDB_MODULE_NAME  _openvdb
+//#else
+//#define PY_OPENVDB_MODULE_NAME  pyopenvdb
+//#endif
+// lukas gartmair 15.6.16
 #define PY_OPENVDB_MODULE_NAME  pyopenvdb
-#endif
 
 BOOST_PYTHON_MODULE(PY_OPENVDB_MODULE_NAME)
 {
@@ -590,9 +600,10 @@ BOOST_PYTHON_MODULE(PY_OPENVDB_MODULE_NAME)
     docOptions.disable_signatures();
     docOptions.enable_user_defined();
 
+
 #ifdef PY_OPENVDB_USE_NUMPY
     // Initialize NumPy.
-    import_array();
+    init_numpy;
 #endif
 
     using namespace openvdb::OPENVDB_VERSION_NAME;
